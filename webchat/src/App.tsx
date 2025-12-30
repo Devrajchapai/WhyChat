@@ -1,0 +1,132 @@
+import { useEffect, useState } from "react";
+import ChatBox from "./components/ChatBox";
+
+function App() {
+  const [userListData, setUserListData] = useState([{}]);
+  const [isChatVisible, setIsChatVisible] = useState(true)
+
+  const users = [
+    {
+      id: 1,
+      image: "/images/image1.jpg",
+      name: "Person1",
+      status: "online",
+      time: "2min ago",
+    },
+    {
+      id: 2,
+      image: "/images/image2.jpeg",
+      name: "Person2",
+      status: "offline",
+      time: "4min ago",
+    },
+    {
+      id: 3,
+      image: "/images/image3.jpeg",
+      name: "Person3",
+      status: "online",
+      time: "2min ago",
+    },
+    {
+      id: 4,
+      image: "/images/image4.jpg",
+      name: "Person4",
+      status: "online",
+      time: "1min ago",
+    },
+    {
+      id: 5,
+      image: "/images/image5.jpeg",
+      name: "Person5",
+      status: "online",
+      time: "5min ago",
+    },
+    {
+      id: 6,
+      image: "/images/image6.jpg",
+      name: "Person6",
+      status: "online",
+      time: "2min ago",
+    },
+    {
+      id: 7,
+      image: "/images/image7.jpeg",
+      name: "Person7",
+      status: "offline",
+      time: "5min ago",
+    },
+    {
+      id: 8,
+      image: "/images/image8.jpeg",
+      name: "Person8",
+      status: "offline",
+      time: "8min ago",
+    },
+    {
+      id: 9,
+      image: "/images/image9.jpg",
+      name: "Person9",
+      status: "offline",
+      time: "9min ago",
+    },
+    {
+      id: 10,
+      image: "/images/image10.png",
+      name: "Person10",
+      status: "offline",
+      time: "4min ago",
+    },
+  ];
+
+  useEffect(() => {
+    setUserListData(users);
+  }, []);
+
+  const userCard = (user) => (
+    <button onClick={()=>setIsChatVisible(!isChatVisible)}>
+      <div className=" grid py-5 bg-white border-2 rounded-2xl border-white p-2 m-5">
+        <div className="grid  grid-cols-10">
+          <div className="grid col-span-2">
+            <img src={user.image} className="rounded-full size-17" />
+          </div>
+
+          <div className="grid col-span-8">
+            <div className="grid grid-rows-5 mt-2">
+              <div className="row-span-2">
+                <h3 className="font-bold">{user.name}</h3>
+              </div>
+
+              <div className="row-span-3">
+                <div className="grid grid-cols-8 mt-2">
+                  <div className="col-span-4">
+                    <h4 className="font-mono text-blue-300">{user.status}</h4>
+                  </div>
+                  <div className="col-span-4 mr-3">
+                    <h4 className="text-right font-mono">{user.time}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+
+  return (
+    <>
+      <div className="grid grid-cols-10 h-screen bg-[#a5bdcb] ">
+        <div className=" bg-[#C6E1F2] col-span-3 p-3">
+          {userListData.map((user) => userCard(user))}
+        </div>
+
+        <div className="bg-cyan-50 col-span-7">
+          
+         {isChatVisible && <ChatBox /> }
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default App;
