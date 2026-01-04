@@ -2,6 +2,9 @@ require('dotenv').config()
 const express = require('express');
 const {createServer} = require('node:http');
 const {Server} = require('socket.io')
+require('./src/config/config.mongoose')
+const mainRouter = require('./src/config/config.routes')
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -15,20 +18,23 @@ const io =new Server(server, {
 });
 
 
+app.use(express.json())
+app.use(mainRouter)
 
-io.on("connection", (socket)=>{
-    console.log('a user connected', socket.id)
 
-    socket.on("sendMesssage", (message)=>{
-        console.log(message)
-        io.emit('receiverMessage', message)
+// io.on("connection", (socket)=>{
+//     console.log('a user connected', socket.id)
+
+//     socket.on("sendMesssage", (message)=>{
+//         console.log(message)
+//         io.emit('receiverMessage', message)
         
-    })
+//     })
 
-    socket.on("disconnect", ()=>{
-        console.log('you are disconnected')
-    })
-})
+//     socket.on("disconnect", ()=>{
+//         console.log('you are disconnected')
+//     })
+// })
 
 
 server.listen(PORT, () => {
