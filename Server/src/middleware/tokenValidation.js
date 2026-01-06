@@ -1,10 +1,10 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const User = require('../modules/models/userModel')
+const User = require('../modules/models/user.model')
 
 module.exports = async (req, res) => {
   const { authorization } = req.headers;
-  try {
+
     if (!authorization) {
       res.status(403).json({
         message: "you are not logged in",
@@ -24,10 +24,4 @@ module.exports = async (req, res) => {
         console.log("userid is: "+ req.user)
         next();
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "server error try again",
-    });
-  }
 };
