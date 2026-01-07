@@ -17,6 +17,11 @@ const chatSchema = new mongoose.Schema({
         ref: 'User'
     }],
 
+    roomID :{
+        type: String,
+        trim: true
+    },
+
     lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message'

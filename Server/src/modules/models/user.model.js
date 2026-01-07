@@ -23,6 +23,16 @@ const userSchema = new Schema({
     avatar: { 
         type: String, 
         default: "https://unsplash.com/s/photos/image" // Default placeholder
+    },
+
+    isDeactivated: {
+        type: Boolean,
+        default: false,
+    },
+
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 
 }, {timestamps: true})

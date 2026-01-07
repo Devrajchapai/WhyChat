@@ -3,10 +3,10 @@ const mainRouter = express.Router();
 
 const messageController = require('./message.controller')
 
-//friends
+//contact
 mainRouter.get('/listofcontact', messageController.listofContact)
 mainRouter.post('/newcontact', messageController.newContact);
-
+mainRouter.post('/newgroup', messageController.newGroup)
 
 //message
 mainRouter.get('/retrivemessage', messageController.retriveMessage);
