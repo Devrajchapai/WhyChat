@@ -7,7 +7,7 @@ module.exports = (io)=>{
         console.log("A user Connected " +  socket.id)
 
         socket.on("join-room", ()=>{
-            socket.join("Z2p30tBe2DWMLLFUiQcvv");
+            socket.join("695a33e5a948887ec6f3ed7c");
         })
         socket.on("receive-message", ({roomID, msg})=>{
             socket.to(roomID).emit("send-message", msg)
