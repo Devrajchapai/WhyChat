@@ -55,7 +55,7 @@ class MessageController {
       const newChat = await Chat.create(chatData);
       if (newChat) {
         req.io
-          .to(contactID._id)
+          .to(contactID._id.toString())
           .emit("individual-room",  `you are in private room with ${myID.username}`);
         return res.status(200).json({
           message: `private room with ${contactEmail} is created `,
@@ -123,10 +123,175 @@ class MessageController {
 
   //in group
   addMembers = async(req, res)=>{
+    const {email, roomID} = req.body;
+        try{
+        if(!email || !roomID){
+            return res.status(400).json({
+                message: `${email} doesn't exist`
+            })
+        }
+
+        const user = await User.findOne({email: email}, {_id: 1, username: 1})
+        const chat = await Chat.findOne({roomID: roomID}, {_id: 1, chatName: 1});
+
+        if(!user || !chat){
+            return res.status(404).json({
+                message: 'failed to add member'
+            })
+        }
+
+        const alreadyInGroup = await Chat.findOne({ 
+          _id: chat._id,  
+          participants: {$in: user._id}  //returns true if user in the group
+        })
+
+        if(alreadyInGroup){
+          return res.status(409).json({
+            message: `${email} is already a member of this group`
+          })
+        }
+
+        if(!alreadyInGroup){
+          await Chat.findOneAndUpdate(
+            {_id: chat._id,},
+            {$push: {participants: user._id}},
+            {new: true}
+          ).then(()=>{
+            req.io.to(user._id.toString()).emit('added-new-member-in-group', `${user.username} is added to the group ${chat.chatName}`)
+            return res.status(200).json({message: `${email} is added to the group`});
+          }).catch(err=>{
+            console.log(err)
+            return res.status(500).json({message: 'failed to add in group'})
+          })
+        }
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({
+            message: 'something went wrong. TRY AGAIN !!!'
+        })
+    }
+  }
+
+  //from group
+  removeMember = async(req, res)=>{
+    const {email, roomID} = req.body;
+    try{
+      if(!email || !roomID){
+        return res.status(400).json({
+          message: `failed to remove member`
+        })
+      }
+
+      const user = await User.findOne({email: email}, {_id: 1, username: 1});
+      const chat = await Chat.findOne({roomID: roomID}, {_id: 1, chatName: 1});
+
+      if(!user || !chat){
+        return res.status(400).json({
+          message: `failed to remove member`
+        })
+      }
+
+      const existingChat = await Chat.findOne({
+        _id: chat._id,
+        participants: user._id
+      }, {_id:1});
+      
+      if(!existingChat){
+        return res.status(404).json({
+          message: `${chat.chatName} doesn't have user ${user.username}`
+        })
+      }
+
+      if(existingChat){
+        await Chat.findOneAndUpdate(
+          {_id: chat._id}, 
+          {$pull: {participants: user._id}},
+          {new: true}
+        ).then(()=>{
+          req.io.to(user._id.toString()).emit("removed-from-group", `you are removed from ${chat.chatName}`);
+            return res.status(200).json({
+            message: `${user.username} is removed from ${chat.chatName}`
+          })
+        
+        }).catch((err)=>{
+          console.log(err);
+          res.status(500).json({
+            message: `failed to remove ${user.username} from ${chat.chatName}`
+          })
+        })
+      }
+    
+
+
+    }catch(err){
+      console.log(err);
+      return res.status(500).json({
+        message: 'something went wrong. TRY AGAIN !!!'
+      })
+    }
 
   }
 
-  storedMessage = async (req, res) => {};
+  storedMessage = async (req, res) => {
+    const {email, content, roomID} = req.body;  //email is of sender
+    try{
+
+      if(!email || !content || !roomID){
+        return res.status(400).json({
+          message: 'failed to send message'
+        });
+      }
+
+      const chat = await Chat.findOne({roomID: roomID}, {_id: 1});
+      const user = await User.findOne({email: email}, {_id: 1})
+
+      if(!chat || !user){
+        return res.status(404).json({
+          message: "failed to send message"
+        })
+      };
+
+      const existingChat = await Chat.findOne({
+        _id: chat._id,
+        participants: user._id
+      });
+
+      if(!existingChat){
+        return res.status(403).json({
+          message: `you are not a member of this group`
+        })
+      }
+
+      if(existingChat){
+        await Message.findOneAndUpdate(
+          {chat: chat._id},
+          {$push: {sender: user._id, content: content}},
+          {upsert: true, new: true},
+        ).then(async(message)=>{
+          await Chat.findOneAndUpdate({_id: chat._id},{$set: {lastMessage: message._id}});
+          req.io.to(roomID).emit("received-message", content);
+          return res.status(200).json({
+            message: "message sent successfully"
+          })
+        }).catch(err=>{
+          res.status(500).json({
+            message: "failed to sent message"
+          })
+        })
+
+  
+      }
+      
+
+
+    }catch(err){
+      console.log(err);
+      return res.status(500).json({
+        message: "something went wrong. TRY AGAIN !!!"
+      })
+    }
+  };
 
   retriveMessage = async (req, res) => {};
 }

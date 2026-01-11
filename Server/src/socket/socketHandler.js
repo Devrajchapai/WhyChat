@@ -6,8 +6,8 @@ module.exports = (io)=>{
     io.on('connection', (socket)=>{
         console.log("A user Connected " +  socket.id)
 
-        socket.on("join-room", ()=>{
-            socket.join("695a33e5a948887ec6f3ed7c");
+        socket.on("join-room", (roomID)=>{
+            socket.join(roomID);
         })
         socket.on("receive-message", ({roomID, msg})=>{
             socket.to(roomID).emit("send-message", msg)

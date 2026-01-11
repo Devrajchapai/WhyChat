@@ -9,7 +9,8 @@ mainRouter.get('/listofcontact', messageController.listofContact)
 
 //for group
 mainRouter.post('/creategroup', messageController.createGroup);
-mainRouter.put('/addmembers', messageController.addMembers)
+mainRouter.put('/addmember', messageController.addMembers)
+mainRouter.delete('/removemember', messageController.removeMember);
 
 
 //for private
@@ -18,7 +19,7 @@ mainRouter.post('/newcontact', messageController.newContact)
 
 //message
 mainRouter.get('/retrivemessage', messageController.retriveMessage);
-mainRouter.post('/storedmessage', messageController.storedMessage)
+mainRouter.put('/storedmessage', messageController.storedMessage)
 
 
 
