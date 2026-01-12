@@ -322,7 +322,48 @@ class MessageController {
     }
   };
 
-  retriveMessage = async (req, res) => {};
+  retriveMessage = async (req, res) => {
+    const {roomID, email} = req.body;
+
+    try{
+      if(!roomID || !email){
+        return res.status(400).json({
+          message: "failed to retrive message"
+        })
+      }
+
+      const chat = await Chat.findOne({roomID: roomID}, {_id: 1});
+      const user = await User.findOne({email: email}, {_id: 1});
+
+      if(!chat || !user){
+        return res.status(404).json({
+          message: "failed to retrive messages"
+        })
+      }
+
+      const isInRoom = await Chat.findOne({_id: chat._id, participants: user._id});
+      if(!isInRoom){
+        return res.status(403).json({
+          message: `you doesn't have access of this messages`
+        })
+      }
+
+      const message = await Message.find({chat: chat._id})
+        .select("content createdAt sender")
+        .populate("sender", "username avatar")
+        .sort({createdAt: -1})
+
+      return res.status(200).json({
+        message: message
+      })
+
+    }catch(err){
+      console.log(err);
+      return res.status(500).json({
+        message: 'something went wrong. TRY AGAIN !!!'
+      })
+    }
+  };
 }
 const messageController = new MessageController();
 module.exports = messageController;

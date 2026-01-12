@@ -22,7 +22,7 @@ const userSchema = new Schema({
 
     avatar: { 
         type: String, 
-        default: "https://unsplash.com/s/photos/image" // Default placeholder
+        default: "https://unsplash.com/photos/woman-with-dslr-camera-e616t35Vbeg" // Default placeholder
     },
 
     isDeactivated: {
