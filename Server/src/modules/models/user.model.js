@@ -25,15 +25,15 @@ const userSchema = new Schema({
         default: "https://unsplash.com/photos/woman-with-dslr-camera-e616t35Vbeg" // Default placeholder
     },
 
-    isDeactivated: {
-        type: Boolean,
-        default: false,
-    },
+    // isDeactivated: {
+    //     type: Boolean,
+    //     default: false,
+    // },
 
-    isDeleted: {
-        type: Boolean,
-        default: false
-    }
+    // isDeleted: {
+    //     type: Boolean,
+    //     default: false
+    // }
 
 }, {timestamps: true})
 

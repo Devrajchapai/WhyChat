@@ -5,7 +5,34 @@ const Message = require("../models/message.model");
 const { uniqueID } = require("../../utlis/uniqueidgenerator");
 
 class MessageController {
-  listofContact = async (req, res) => {};
+  listofContact = async (req, res) => {
+    const {email} = req.body;
+    try{
+      if(!email){
+        return res.status(400).json({
+          message: `failed to fetch`
+        })
+      }
+      const user = await User.findOne({email: email}, {_id: 1});
+      if(!user){
+          return res.status(404).json({
+            message: `failed to find ${email}`
+          })
+      }
+
+      const chat = await Chat.find({participants: user._id}).select("chatName isGroupChat participants avatar").populate("participants", "username avatar")
+      return res.status(200).json({
+        message: chat
+      })
+
+
+    }catch(err){
+      console.log(err);
+      res.status(500).json({
+        message: `something went wrong. TRY AGAIN !!!`
+      })
+    }
+  };
 
   //for private message
   newContact = async (req, res) => {
@@ -75,7 +102,7 @@ class MessageController {
     } catch (err) {
       console.log(err);
       res.status(500).json({
-        message: "something wentssz. TRY AGAIN !!!",
+        message: "something went wrong. TRY AGAIN !!!",
       });
     }
   };
@@ -351,6 +378,7 @@ class MessageController {
       const message = await Message.find({chat: chat._id})
         .select("content createdAt sender")
         .populate("sender", "username avatar")
+        //.limit(10)
         .sort({createdAt: -1})
 
       return res.status(200).json({
