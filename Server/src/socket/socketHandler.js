@@ -9,9 +9,6 @@ module.exports = (io)=>{
         socket.on("join-room", (roomID)=>{
             socket.join(roomID);
         })
-        socket.on("receive-message", ({roomID, msg})=>{
-            socket.to(roomID).emit("send-message", msg)
-        })
 
         socket.on('disconnect', ()=>{
             console.log("A user is Disconnected ")
